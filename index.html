@@ -10,10 +10,19 @@
 	<script src="js/block.js"></script>
 	<script src="js/pool.js"></script>
 	<script src="js/keyboard.js"></script>
+	<script src="js/gravity.js"></script>
+	<script src="js/score.js"></script>
 </head>
 
 <body>
 	<div id="world">
+		<div id="over">
+			<h1>GAME OVER</h1>
+			<button id="reset">再来一局</button>
+		</div>
+		<div id="board">
+			<h1>SCORE: <pre id="score"></pre></h1>
+		</div>
 		<div id="pool-wrap">
 			<div id="pool"></div>
 		</div>

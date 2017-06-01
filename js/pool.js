@@ -1,7 +1,7 @@
 function Pool() {
 	var setting = {
-		width: 8,
-		height: 10,
+		width: 12,
+		height: 20,
 		cellSize: 20
 	};
 	var $pool;
@@ -12,7 +12,8 @@ function Pool() {
 		ice: 2
 	};
 
-	var clearLines = function () {
+	var clearLines = function() {
+		var lines = 0;
 		for (var i = 0; i < grid.length; i++) {
 			for (var j = 0; j < grid[i].length; j++) {
 				if (grid[i][j].status !== cellStatus.ice) {
@@ -20,6 +21,7 @@ function Pool() {
 				}
 			}
 			if (j === grid[i].length) {
+				lines++;
 				var line = [];
 				for (var j = 0; j < setting.width; j++) {
 					$('#' + grid[i][j].id).remove();
@@ -36,9 +38,10 @@ function Pool() {
 				}
 			}
 		}
+		score.clBonus(lines);
 	};
 
-	var checkFull = function () {
+	var checkFull = function() {
 		for (var i = 0; i < setting.width; i++) {
 			if (grid[0][i].status === cellStatus.ice) {
 				return true;
@@ -47,7 +50,7 @@ function Pool() {
 		return false;
 	};
 
-	this.init = function () {
+	this.init = function() {
 		for (var i = 0; i < setting.height; i++) {
 			var line = [];
 			for (var j = 0; j < setting.width; j++) {
@@ -59,7 +62,17 @@ function Pool() {
 		$pool.width(setting.width * setting.cellSize).height(setting.height * setting.cellSize);
 	};
 
-	this.isEmptyCell = function (pos) {
+	this.reset = function() {
+		for (var i = 0; i < grid.length; i++) {
+			for (var j = 0; j < grid[i].length; j++) {
+				grid[i][j].status = cellStatus.empty;
+				grid[i][j].id = null;
+			}
+		}
+		$pool.empty();
+	};
+
+	this.isEmptyCell = function(pos) {
 		if (pos[0] >= setting.height || pos[1] < 0 || pos[1] >= setting.width) {
 			return false;
 		} else if (pos[0] >= 0) {
@@ -69,25 +82,25 @@ function Pool() {
 		}
 	};
 
-	this.putIn = function (id, pos, cells) {
+	var putIn = function(id, pos, cells) {
 		var $block = $('<div class="block"></div>').attr('id', id).css({ top: pos[0] * setting.cellSize, left: pos[1] * setting.cellSize }).appendTo($pool);
 		for (var i = 0; i < cells.length; i++) {
 			$('<div class="cell"></div>').attr('id', id + '_' + i).width(setting.cellSize).height(setting.cellSize).css({ top: cells[i][0] * setting.cellSize, left: cells[i][1] * setting.cellSize }).appendTo($block);
 		}
 	};
 
-	this.setPosition = function (blockId, pos) {
+	var setPosition = function(blockId, pos) {
 		$('#' + blockId).css({ top: pos[0] * setting.cellSize, left: pos[1] * setting.cellSize });
 	};
 
-	this.setDirection = function (blockId, cells) {
+	var setDirection = function(blockId, cells) {
 		var $block = $('#' + blockId);
 		for (var i = 0; i < cells.length; i++) {
 			$block.find('.cell:eq(' + i + ')').css({ top: cells[i][0] * setting.cellSize, left: cells[i][1] * setting.cellSize });
 		}
 	};
 
-	this.freezeBlock = function (blockId, pos, cells) {
+	var freezeBlock = function(blockId, pos, cells) {
 		var $block = $('#' + blockId);
 		var $cells = $($block.remove().html()).appendTo($pool);
 		for (var i = 0; i < $cells.length; i++) {
@@ -101,7 +114,19 @@ function Pool() {
 		}
 		clearLines();
 		if (!checkFull()) {
-			new Block();
+			msgCenter.postMsg('block.neednew');
+		} else {
+			msgCenter.postMsg('game.over');
 		}
 	};
+
+	msgCenter.regHandler('block.created', null, function(params) {
+		putIn(params.id, params.pos, params.cells);
+	}).regHandler('block.freeze', null, function(params) {
+		freezeBlock(params.id, params.pos, params.cells);
+	}).regHandler('block.setpos', null, function(params) {
+		setPosition(params.id, params.pos);
+	}).regHandler('block.setdir', null, function(params) {
+		setDirection(params.id, params.cells);
+	});
 }

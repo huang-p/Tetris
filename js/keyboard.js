@@ -1,4 +1,4 @@
-$(document).on('keyup', function (e) {
+$(document).on('keyup', function(e) {
 	switch (e.which) {
 		case 38:
 			msgCenter.postMsg('block.rotate');

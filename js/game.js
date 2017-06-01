@@ -2,14 +2,14 @@ function MsgCenter() {
 	var msgQueue = [];
 	var handlers = {};
 
-	this.postMsg = function (msgName, msgData) {
+	this.postMsg = function(msgName, msgData) {
 		msgQueue.push({
 			name: msgName,
 			data: msgData
 		});
 	};
 
-	this.regHandler = function (msgName, host, handler) {
+	this.regHandler = function(msgName, host, handler) {
 		if (!handlers[msgName]) {
 			handlers[msgName] = {};
 		}
@@ -17,14 +17,14 @@ function MsgCenter() {
 		return this;
 	};
 
-	this.unregHandler = function (msgName, host) {
+	this.unregHandler = function(msgName, host) {
 		if (handlers[msgName] && handlers[msgName][host]) {
 			delete handlers[msgName][host];
 		}
 		return this;
 	};
 
-	setInterval(function () {
+	var timer = setInterval(function() {
 		var msg = msgQueue.shift();
 		if (msg && handlers[msg.name]) {
 			for (var i in handlers[msg.name]) {
@@ -32,13 +32,38 @@ function MsgCenter() {
 			}
 		}
 	}, 20);
+
+	this.reset = function() {
+		msgQueue.splice(0);
+	}
 }
 
 var msgCenter = new MsgCenter();
-var pool
+var blockFactory;
+var pool;
+var gravity;
+var score;
 
-$(function () {
+msgCenter.regHandler('game.over', null, function() {
+	$('#board').hide();
+	$('#over').show();
+});
+
+$(document).on('click', '#reset', function() {
+	msgCenter.reset();
+	pool.reset();
+	$('#over').hide();
+	score.reset();
+	$('#board').show();
+	msgCenter.postMsg('block.neednew');
+});
+
+$(function() {
 	pool = new Pool();
 	pool.init();
-	new Block();
+	blockFactory = new BlockFactory();
+	gravity = new Gravity();
+	score = new Score();
+	score.reset();
+	msgCenter.postMsg('block.neednew');
 });
