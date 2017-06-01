@@ -5,7 +5,7 @@ function Score() {
 	var points = 0;
 
 	var setScore = function() {
-		$score.text(points.toString().padStart(8, ' '));
+		$score.text(('        ' + points).substr(-8));
 	};
 
 	this.clBonus = function(lines) {
