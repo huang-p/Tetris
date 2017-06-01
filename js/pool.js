@@ -24,7 +24,7 @@ function Pool() {
 				lines++;
 				var line = [];
 				for (var j = 0; j < setting.width; j++) {
-					$('#' + grid[i][j].id).remove();
+					$('#' + grid[i][j].id).hide(400, function() { $(this).remove(); });
 					line.push({ status: cellStatus.empty });
 				}
 				grid.splice(i, 1);
