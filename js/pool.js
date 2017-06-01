@@ -11,6 +11,8 @@ function Pool() {
 		block: 1,
 		ice: 2
 	};
+	var clearCounter = 0;
+	var clear100 = 10
 
 	var clearLines = function() {
 		var lines = 0;
@@ -21,6 +23,9 @@ function Pool() {
 				}
 			}
 			if (j === grid[i].length) {
+				if (++clearCounter % clear100 === 0) {
+					msgCenter.postMsg('pool.clear100');
+				}
 				lines++;
 				var line = [];
 				for (var j = 0; j < setting.width; j++) {
@@ -69,6 +74,7 @@ function Pool() {
 				grid[i][j].id = null;
 			}
 		}
+		clearCounter = 0;
 		$pool.empty();
 	};
 
