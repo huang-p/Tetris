@@ -8,15 +8,17 @@ function Score() {
 		$score.text(('        ' + points).substr(-8));
 	};
 
-	this.clBonus = function(lines) {
+	var clBonus = function(lines) {
 		if (lines > 0) {
 			points += pointUnit * (lines + (lines - 1) / 10);
 			setScore();
 		}
 	};
 
-	this.reset = function() {
+	var reset = function() {
 		points = 0;
 		setScore();
 	};
+
+	msgCenter.regHandler('score.clbonus', null, clBonus).regHandler('score.reset', null, reset);
 }

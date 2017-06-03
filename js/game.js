@@ -39,10 +39,7 @@ function MsgCenter() {
 }
 
 var msgCenter = new MsgCenter();
-var blockFactory;
-var pool;
-var gravity;
-var score;
+var gameLevel = 'hard';
 
 msgCenter.regHandler('game.over', null, function() {
 	$('#board').hide();
@@ -51,19 +48,18 @@ msgCenter.regHandler('game.over', null, function() {
 
 $(document).on('click', '#reset', function() {
 	msgCenter.reset();
-	pool.reset();
+	msgCenter.postMsg('pool.reset');
 	$('#over').hide();
-	score.reset();
+	msgCenter.postMsg('score.reset');
 	$('#board').show();
 	msgCenter.postMsg('block.neednew');
 });
 
 $(function() {
-	pool = new Pool();
-	pool.init();
-	blockFactory = new BlockFactory();
-	gravity = new Gravity();
-	score = new Score();
-	score.reset();
+	new Pool();
+	new BlockFactory();
+	new Gravity();
+	new Score();
+	msgCenter.postMsg('score.reset');
 	msgCenter.postMsg('block.neednew');
 });

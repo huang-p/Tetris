@@ -43,7 +43,7 @@ function Pool() {
 				}
 			}
 		}
-		score.clBonus(lines);
+		msgCenter.postMsg('score.clbonus', lines);
 	};
 
 	var checkFull = function() {
@@ -55,7 +55,7 @@ function Pool() {
 		return false;
 	};
 
-	this.init = function() {
+	var init = function() {
 		for (var i = 0; i < setting.height; i++) {
 			var line = [];
 			for (var j = 0; j < setting.width; j++) {
@@ -67,7 +67,7 @@ function Pool() {
 		$pool.width(setting.width * setting.cellSize).height(setting.height * setting.cellSize);
 	};
 
-	this.reset = function() {
+	var reset = function() {
 		for (var i = 0; i < grid.length; i++) {
 			for (var j = 0; j < grid[i].length; j++) {
 				grid[i][j].status = cellStatus.empty;
@@ -78,14 +78,14 @@ function Pool() {
 		$pool.empty();
 	};
 
-	this.isEmptyCell = function(pos) {
-		if (pos[0] >= setting.height || pos[1] < 0 || pos[1] >= setting.width) {
-			return false;
-		} else if (pos[0] >= 0) {
-			return grid[pos[0]][pos[1]].status === cellStatus.empty;
-		} else {
-			return true;
+	var checkCell = function(pos, cells, cb) {
+		for (var i = 0; i < cells.length; i++) {
+			if (cells[i][0] + pos[0] >= setting.height || cells[i][1] + pos[1] < 0 || cells[i][1] + pos[1] >= setting.width ||
+				(cells[i][0] + pos[0] >= 0 && grid[cells[i][0] + pos[0]][cells[i][1] + pos[1]].status !== cellStatus.empty)) {
+				return cb(false);
+			}
 		}
+		cb(true);
 	};
 
 	var putIn = function(id, pos, cells) {
@@ -126,13 +126,17 @@ function Pool() {
 		}
 	};
 
-	msgCenter.regHandler('block.created', null, function(params) {
-		putIn(params.id, params.pos, params.cells);
-	}).regHandler('block.freeze', null, function(params) {
-		freezeBlock(params.id, params.pos, params.cells);
-	}).regHandler('block.setpos', null, function(params) {
-		setPosition(params.id, params.pos);
-	}).regHandler('block.setdir', null, function(params) {
-		setDirection(params.id, params.cells);
-	});
+	init();
+	msgCenter.regHandler('pool.reset', null, reset)
+		.regHandler('pool.checkcell', null, function(params) {
+			checkCell(params.pos, params.cells, params.cb);
+		}).regHandler('block.created', null, function(params) {
+			putIn(params.id, params.pos, params.cells);
+		}).regHandler('block.freeze', null, function(params) {
+			freezeBlock(params.id, params.pos, params.cells);
+		}).regHandler('block.setpos', null, function(params) {
+			setPosition(params.id, params.pos);
+		}).regHandler('block.setdir', null, function(params) {
+			setDirection(params.id, params.cells);
+		});
 }
