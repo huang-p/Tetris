@@ -4,12 +4,14 @@
 <head>
 	<title>俄罗斯方块</title>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 	<link rel="stylesheet" href="css/env.css">
 	<script src="js/jquery-3.2.1.js"></script>
 	<script src="js/game.js"></script>
 	<script src="js/block.js"></script>
 	<script src="js/pool.js"></script>
 	<script src="js/keyboard.js"></script>
+	<script src="js/mouse.js"></script>
 	<script src="js/gravity.js"></script>
 	<script src="js/score.js"></script>
 </head>
@@ -25,6 +27,12 @@
 		</div>
 		<div id="pool-wrap">
 			<div id="pool"></div>
+			<div id="ctrl-bar">
+				<button class="moveleft"></button>
+				<button class="rotate"></button>
+				<button class="movedown"></button>
+				<button class="moveright"></button>
+			</div>
 		</div>
 	</div>
 </body>
