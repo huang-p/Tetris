@@ -8,6 +8,7 @@ function Block() {
 		position[3] = shapes[direction][i][0] + 1 > position[3] ? shapes[direction][i][0] + 1 : position[3];
 	}
 	position[0] = -position[3];
+	var isDead = false;
 
 	var rotate = function() {
 		var newDir = (direction + 1) % shapes.length;
@@ -38,22 +39,24 @@ function Block() {
 					freeze();
 				}
 			}
-		});
+		}, true);
 	};
 
 	var freeze = function() {
+		isDead = true;
 		msgCenter.unregHandler('block.rotate', blockId).unregHandler('block.movedown', blockId).unregHandler('block.moveleft', blockId).unregHandler('block.moveright', blockId);
 		msgCenter.postMsg('block.freeze', { id: blockId, pos: position, cells: shapes[direction] });
 	};
 
-	msgCenter.regHandler('block.rotate', blockId, rotate)
-		.regHandler('block.movedown', blockId, function() {
-			move([1, 0], true);
-		}).regHandler('block.moveleft', blockId, function() {
-			move([0, -1]);
-		}).regHandler('block.moveright', blockId, function() {
-			move([0, 1]);
-		});
+	msgCenter.regHandler('block.rotate', blockId, function() {
+		!isDead && rotate();
+	}).regHandler('block.movedown', blockId, function() {
+		!isDead && move([1, 0], true);
+	}).regHandler('block.moveleft', blockId, function() {
+		!isDead && move([0, -1]);
+	}).regHandler('block.moveright', blockId, function() {
+		!isDead && move([0, 1]);
+	});
 
 	msgCenter.postMsg('block.created', { id: blockId, pos: position, cells: shapes[direction] });
 }

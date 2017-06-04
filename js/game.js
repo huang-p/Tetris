@@ -2,11 +2,12 @@ function MsgCenter() {
 	var msgQueue = [];
 	var handlers = {};
 
-	this.postMsg = function(msgName, msgData) {
-		msgQueue.push({
+	this.postMsg = function(msgName, msgData, immediately) {
+		var msg = {
 			name: msgName,
 			data: msgData
-		});
+		};
+		immediately ? msgQueue.unshift(msg) : msgQueue.push(msg);
 	};
 
 	this.regHandler = function(msgName, host, handler) {
