@@ -32,7 +32,7 @@ function MsgCenter() {
 				handlers[msg.name][i](msg.data);
 			}
 		}
-	}, 20);
+	}, 10);
 
 	this.reset = function() {
 		msgQueue.splice(0);
@@ -40,27 +40,28 @@ function MsgCenter() {
 }
 
 var msgCenter = new MsgCenter();
-var gameLevel = 'hard';
 
-msgCenter.regHandler('game.over', null, function() {
-	$('#board').hide();
-	$('#over').show();
-});
+function Game() {
+	this.level = 'easy';
+	this.poolWidth = 12;
+	this.poolHeight = 20;
+	this.cellSize = 20;
 
-$(document).on('click', '#reset', function() {
-	msgCenter.reset();
-	msgCenter.postMsg('pool.reset');
-	$('#over').hide();
-	msgCenter.postMsg('score.reset');
-	$('#board').show();
-	msgCenter.postMsg('block.neednew');
-});
+	msgCenter.regHandler('game.start', null, function() {
+		new Pool();
+		new BlockFactory();
+		new Gravity();
+		new Score();
+		msgCenter.postMsg('score.reset');
+		msgCenter.postMsg('block.neednew');
+	}).regHandler('game.over', null, function() {
+		$('#board').hide();
+		$('#over').show();
+	});
+}
+
+var game = new Game();
 
 $(function() {
-	new Pool();
-	new BlockFactory();
-	new Gravity();
-	new Score();
-	msgCenter.postMsg('score.reset');
-	msgCenter.postMsg('block.neednew');
+	msgCenter.postMsg('game.start');
 });

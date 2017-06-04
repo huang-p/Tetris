@@ -1,13 +1,8 @@
 function Block() {
 	var blockId = 'b' + Math.random().toString().substr(2);
-	var shapes = Block.shapeDefines[Math.floor(Math.random() * 10000) % (gameLevel === 'easy' ? 7 : Block.shapeDefines.length)];
+	var shapes = Block.shapeDefines[Math.floor(Math.random() * 10000) % (game.level === 'easy' ? 7 : Block.shapeDefines.length)];
 	var direction = 0;
-	var position = [-4, 4, 0, 0];
-	for (var i = 0; i < shapes[direction].length; i++) {
-		position[2] = shapes[direction][i][1] + 1 > position[2] ? shapes[direction][i][1] + 1 : position[2];
-		position[3] = shapes[direction][i][0] + 1 > position[3] ? shapes[direction][i][0] + 1 : position[3];
-	}
-	position[0] = -position[3];
+	var position = [-4, 4];
 	var isDead = false;
 
 	var rotate = function() {
@@ -27,7 +22,7 @@ function Block() {
 
 	var move = function(delta, movedown) {
 		var shapeCells = shapes[direction];
-		var newPos = [position[0] + delta[0], position[1] + delta[1], position[2], position[3]];
+		var newPos = [position[0] + delta[0], position[1] + delta[1]];
 		msgCenter.postMsg('pool.checkcell', {
 			pos: newPos,
 			cells: shapeCells,
