@@ -57,6 +57,13 @@ function Game() {
 	}).regHandler('game.over', null, function() {
 		$('#board').hide();
 		$('#over').show();
+	}).regHandler('game.reset', null, function() {
+		msgCenter.reset();
+		msgCenter.postMsg('pool.reset');
+		$('#over').hide();
+		msgCenter.postMsg('score.reset');
+		$('#board').show();
+		msgCenter.postMsg('block.neednew');
 	});
 }
 

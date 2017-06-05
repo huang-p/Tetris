@@ -1,5 +1,4 @@
 function Score() {
-	var $board = $('#board');
 	var $score = $('#score');
 	var pointUnit = 100;
 	var points = 0;
